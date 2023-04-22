@@ -1,0 +1,22 @@
+credentials:
+  usernames:
+    dixon:
+      email: dixon@comp5521.com
+      name: Dixon
+      password: $2b$12$aU7UX8LySvUK/YMF.ncahu6GdbczTQEt6/tqInrcnRTO1vhPoklVm
+    zoe:
+      email: zoe@comp5521.com
+      name: Zoe
+      password: $2b$12$0HP5FbEyP8KPiwb0Gd8f0u5IHTlGtHNZXuuPZEfRkqX5GNH4C4EUe
+    cindy:
+      email: cindy@comp5521.com
+      name: Cindy
+      password: $2b$12$XnZFERDkyO5gsTAyXe9HPeSs/8uCW1JWQGevFGCZozO82se98dP6G
+    roy:
+      email: roy@comp5521.com
+      name: Roy
+      password: $2b$12$ZINpDKZKNLBkP.I2q.nY9u8PBqs0asjN3fTQz9qFX1FnYCBRIWrtG
+cookie:
+  expiry_days: 30
+  key: random_signature_key # Must be string
+  name: random_cookie_name
