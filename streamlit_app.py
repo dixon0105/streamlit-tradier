@@ -3,6 +3,12 @@ import streamlit_authenticator as stauth
 import psycopg2
 import yaml
 from yaml.loader import SafeLoader
+# Below for CoinMarketCap API
+from requests import Request, Session
+from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
+import json
+# Ref.: https://coinmarketcap.com/api/documentation/v1/#
+
 with open('./config.yaml') as file:
     config = yaml.load(file, Loader=SafeLoader)
 
@@ -21,12 +27,36 @@ name, authentication_status, username = authenticator.login('Login', 'main')
 
 if st.session_state["authentication_status"]:
     authenticator.logout('Logout', 'main')
-    st.write(f'Welcome *{st.session_state["name"]}*')
-    st.title('Some content')
+    st.write(f'Welcome, *{st.session_state["name"]}*')
+    st.write(f'User name: *{st.session_state["username"]}*')
 elif st.session_state["authentication_status"] == False:
     st.error('Username/password is incorrect')
 elif st.session_state["authentication_status"] == None:
     st.warning('Please enter your username and password')
+
+
+# url = 'https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest'
+url = 'https://sandbox-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest'
+parameters = {
+    'convert':'USD',
+    'slug':'bitcoin,ethereum'
+}
+headers = {
+    'Accepts': 'application/json',
+    'X-CMC_PRO_API_KEY': os.environ["CMC_APIKEY"],
+}
+
+session = Session()
+session.headers.update(headers)
+
+try:
+    response = session.get(url, params=parameters)
+    data = json.loads(response.text)
+    st.write(data)
+except (ConnectionError, Timeout, TooManyRedirects) as e:
+    st.write(e)
+
+
 
 # Initialize connection.
 # Uses st.cache_resource to only run once.
