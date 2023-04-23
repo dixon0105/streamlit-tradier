@@ -42,7 +42,6 @@ elif st.session_state["authentication_status"] == True and st.session_state["sta
     try:
         response = session.get(url, params=parameters)
         data = json.loads(response.text)
-        # st.write(data)
         for i in data["data"]:
             if (data["data"][i]["symbol"] == "SHIB"):
                 st.write(f'Price of {data["data"][i]["name"]} ({data["data"][i]["symbol"]}): {data["data"][i]["quote"]["USD"]["price"]:.8f}')
