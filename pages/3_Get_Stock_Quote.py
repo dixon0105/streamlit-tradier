@@ -1,3 +1,5 @@
+import streamlit as st
+
 st.title("Get Stock Quote")
 
 # Check log in status

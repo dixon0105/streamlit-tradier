@@ -1,3 +1,5 @@
+import os, streamlit as st
+
 st.title("Get Crypto Prices")
 
 # Check log in status

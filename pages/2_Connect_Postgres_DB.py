@@ -1,3 +1,6 @@
+import os, streamlit as st
+import psycopg2
+
 st.title("Connect Postgres DB")
 
 # Check log in status

@@ -1,6 +1,6 @@
+import os, streamlit as st
 # For 2FA
-import pyotp
-import qrcode
+import pyotp, qrcode
 from PIL import Image
 
 st.title("2FA QR Code")
