@@ -17,6 +17,6 @@ credentials:
       name: Roy
       password: $2b$12$ZINpDKZKNLBkP.I2q.nY9u8PBqs0asjN3fTQz9qFX1FnYCBRIWrtG
 cookie:
-  expiry_days: 30
+  expiry_days: 1
   key: random_signature_key # Must be string
   name: random_cookie_name
