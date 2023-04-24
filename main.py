@@ -38,23 +38,18 @@ elif st.session_state["authentication_status"] == True:
         # OTP verified for current time
         totp = pyotp.TOTP(os.environ["BASE32SECRET"])
 
-        code_2FA = st.text_input("Please enter your 2FA code: ")
-        if st.button("Submit", key="for2FA"):
+        code_2FA_container = st.empty()
+        code_2FA = code_2FA_container.text_input("Please enter your 2FA code: ")
+        Submit_2FA_btn = st.empty()
+        btn = Submit_2FA_btn.button("Submit", disabled=False, key="for2FA")
+        if btn:
             if totp.verify(code_2FA):
                 st.session_state["status_2FA"] = True
-                # st.code_2FA.empty()
+                code_2FA_container.empty()
                 success = st.success("You have passed the 2FA test!", icon="✅")
                 time.sleep(2)  # Wait for 2 seconds
                 success.empty()
                 st.write("Please feel free to visit other pages!")
-                if authentication_status:
-                    try:
-                        if authenticator.reset_password(username, "Reset password"):
-                            success = st.success("Password modified successfully")
-                            time.sleep(2)  # Wait for 2 seconds
-                            success.empty()
-                    except Exception as e:
-                        st.error(e)
             else:
                 st.error("2FA code is incorrect.")
                 st.session_state["status_2FA"] = False
