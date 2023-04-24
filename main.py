@@ -8,16 +8,20 @@ import streamlit as st
 import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
+from config import Settings, Config
 
 st.set_page_config(page_title="COMP Project", page_icon="random")
 
 with open("./config.yaml") as file:
     config = yaml.load(file, Loader=SafeLoader)
+    cfg = Config.parse_obj(config)
+
+
 authenticator = stauth.Authenticate(
-    config["credentials"],
-    config["cookie"]["name"],
-    config["cookie"]["key"],
-    config["cookie"]["expiry_days"],
+    cfg.credentials,
+    cfg.cookie["name"],
+    cfg.cookie["key"],
+    cfg.cookie["expiry_days"],
 )
 
 st.title("COMP5521 Group Project")
@@ -36,7 +40,7 @@ elif st.session_state["authentication_status"] == True:
     st.write(f'Welcome, *{st.session_state["name"]}*')
     if "status_2FA" not in st.session_state or st.session_state["status_2FA"] != True:
         # OTP verified for current time
-        totp = pyotp.TOTP(os.environ["BASE32SECRET"])
+        totp = pyotp.TOTP(Settings().base32secret)
 
         code_2FA_container = st.empty()
         code_2FA = code_2FA_container.text_input("Please enter your 2FA code: ")
