@@ -40,6 +40,12 @@ elif st.session_state["authentication_status"] == True:
                 st.session_state['status_2FA'] = True
                 st.write("You have passed the 2FA test!")
                 st.write("Please feel free to visit other pages!")
+                if authentication_status:
+                    try:
+                        if authenticator.reset_password(username, 'Reset password'):
+                            st.success('Password modified successfully')
+                    except Exception as e:
+                        st.error(e)
             else:
                 st.error('2FA code is incorrect.')
                 st.session_state['status_2FA'] = False
