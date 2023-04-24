@@ -1,5 +1,6 @@
 import os, streamlit as st
 import streamlit_authenticator as stauth
+import time
 import yaml
 from yaml.loader import SafeLoader
 # For 2FA
@@ -39,12 +40,16 @@ elif st.session_state["authentication_status"] == True:
             if totp.verify(code_2FA):
                 st.session_state['status_2FA'] = True
                 st.code_2FA.empty()
-                st.write("You have passed the 2FA test!")
+                success = st.success('You have passed the 2FA test!', icon="✅")
+                time.sleep(2) # Wait for 2 seconds
+                success.empty()
                 st.write("Please feel free to visit other pages!")
                 if authentication_status:
                     try:
                         if authenticator.reset_password(username, 'Reset password'):
-                            st.success('Password modified successfully')
+                            success = st.success('Password modified successfully')
+                            time.sleep(2) # Wait for 2 seconds
+                            success.empty()
                     except Exception as e:
                         st.error(e)
             else:
