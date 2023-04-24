@@ -9,6 +9,7 @@ import yaml
 from requests import Request, Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 from yaml.loader import SafeLoader
+from config import Settings, Config
 
 # Ref.: https://coinmarketcap.com/api/documentation/v1/#
 
@@ -16,11 +17,14 @@ st.title("Get Crypto Prices")
 
 with open("./config.yaml") as file:
     config = yaml.load(file, Loader=SafeLoader)
+    cfg = Config.parse_obj(config)
+
+
 authenticator = stauth.Authenticate(
-    config["credentials"],
-    config["cookie"]["name"],
-    config["cookie"]["key"],
-    config["cookie"]["expiry_days"],
+    cfg.credentials,
+    cfg.cookie["name"],
+    cfg.cookie["key"],
+    cfg.cookie["expiry_days"],
 )
 
 # Check log in status
@@ -49,7 +53,7 @@ elif (
 
     headers = {
         "Accepts": "application/json",
-        "X-CMC_PRO_API_KEY": os.environ["CMC_APIKEY"],
+        "X-CMC_PRO_API_KEY": Settings().CMC_APIKEY,
     }
     session = Session()
     session.headers.update(headers)

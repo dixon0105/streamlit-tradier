@@ -8,16 +8,19 @@ import streamlit_authenticator as stauth
 import yaml
 from PIL import Image
 from yaml.loader import SafeLoader
+from config import Settings, Config
 
 st.title("2FA QR Code")
 
 with open("./config.yaml") as file:
     config = yaml.load(file, Loader=SafeLoader)
+    cfg = Config.parse_obj(config)
+
 authenticator = stauth.Authenticate(
-    config["credentials"],
-    config["cookie"]["name"],
-    config["cookie"]["key"],
-    config["cookie"]["expiry_days"],
+    cfg.credentials,
+    cfg.cookie["name"],
+    cfg.cookie["key"],
+    cfg.cookie["expiry_days"],
 )
 
 # Check log in status
@@ -36,9 +39,9 @@ elif (
     st.write(f'Welcome, *{st.session_state["name"]}*')
 
     # OTP verified for current time
-    totp = pyotp.TOTP(os.environ["BASE32SECRET"])
+    totp = pyotp.TOTP(Settings().base32secret)
 
-    imgData = pyotp.totp.TOTP(os.environ["BASE32SECRET"]).provisioning_uri(
+    imgData = pyotp.totp.TOTP(Settings().base32secret).provisioning_uri(
         name=st.session_state["username"] + "@comp5521.com",
         issuer_name="COMP Project App",
     )

@@ -7,16 +7,19 @@ import streamlit_authenticator as stauth
 import yaml
 from requests.structures import CaseInsensitiveDict
 from yaml.loader import SafeLoader
+from config import Settings, Config
 
 st.title("Braintree")
 
 with open("./config.yaml") as file:
     config = yaml.load(file, Loader=SafeLoader)
+    cfg = Config.parse_obj(config)
+
 authenticator = stauth.Authenticate(
-    config["credentials"],
-    config["cookie"]["name"],
-    config["cookie"]["key"],
-    config["cookie"]["expiry_days"],
+    cfg.credentials,
+    cfg.cookie["name"],
+    cfg.cookie["key"],
+    cfg.cookie["expiry_days"],
 )
 
 # Check log in status

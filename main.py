@@ -50,6 +50,7 @@ elif st.session_state["authentication_status"] == True:
             if totp.verify(code_2FA):
                 st.session_state["status_2FA"] = True
                 code_2FA_container.empty()
+                Submit_2FA_btn.empty()
                 success = st.success("You have passed the 2FA test!", icon="✅")
                 time.sleep(2)  # Wait for 2 seconds
                 success.empty()

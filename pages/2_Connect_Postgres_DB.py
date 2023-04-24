@@ -5,16 +5,19 @@ import streamlit as st
 import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
+from config import Settings, Config
 
 st.title("Connect Postgres DB")
 
 with open("./config.yaml") as file:
     config = yaml.load(file, Loader=SafeLoader)
+    cfg = Config.parse_obj(config)
+
 authenticator = stauth.Authenticate(
-    config["credentials"],
-    config["cookie"]["name"],
-    config["cookie"]["key"],
-    config["cookie"]["expiry_days"],
+    cfg.credentials,
+    cfg.cookie["name"],
+    cfg.cookie["key"],
+    cfg.cookie["expiry_days"],
 )
 
 # Check log in status
@@ -37,10 +40,10 @@ elif (
     @st.cache_resource
     def init_connection():
         return psycopg2.connect(
-            host=os.environ["PGHOST"],
-            database=os.environ["PGDATABASE"],
-            user=os.environ["PGUSER"],
-            password=os.environ["PGPASSWORD"],
+            host=Settings().PGHOST,
+            database=Settings().PGDATABASE,
+            user=Settings().PGUSER,
+            password=Settings().PGPASSWORD,
         )
 
     conn = init_connection()
