@@ -12,3 +12,8 @@ class Config(BaseModel):
 
 class Settings(BaseSettings):
     base32secret: str
+    CMC_APIKEY: str
+    PGHOST: str
+    PGDATABASE: str
+    PGUSER: str
+    PGPASSWORD: str
