@@ -16,10 +16,18 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
 pip install -r requirements.txt
 ```
 
+### Env template
+
+```
+BASE32SECRET={str}
+```
+
 ## Usage
 
+Run command:
+
 ```bash
-streamlit run main.py
+set -a && source .env && set +a && streamlit run main.py
 ```
 
 ## Contributing
