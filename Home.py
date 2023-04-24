@@ -38,6 +38,7 @@ elif st.session_state["authentication_status"] == True:
         if st.button("Submit", key="for2FA"):
             if totp.verify(code_2FA):
                 st.session_state['status_2FA'] = True
+                st.code_2FA.empty()
                 st.write("You have passed the 2FA test!")
                 st.write("Please feel free to visit other pages!")
                 if authentication_status:
