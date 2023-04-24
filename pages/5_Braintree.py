@@ -1,46 +1,68 @@
-import os, streamlit as st
+import json
+import os
+
+import requests
+import streamlit as st
 import streamlit_authenticator as stauth
 import yaml
-from yaml.loader import SafeLoader
-import requests
 from requests.structures import CaseInsensitiveDict
-import json
+from yaml.loader import SafeLoader
 
 st.title("Braintree")
 
-with open('./config.yaml') as file:
+with open("./config.yaml") as file:
     config = yaml.load(file, Loader=SafeLoader)
 authenticator = stauth.Authenticate(
-    config['credentials'],
-    config['cookie']['name'],
-    config['cookie']['key'],
-    config['cookie']['expiry_days']
+    config["credentials"],
+    config["cookie"]["name"],
+    config["cookie"]["key"],
+    config["cookie"]["expiry_days"],
 )
 
 # Check log in status
-if 'authentication_status' not in st.session_state or st.session_state["authentication_status"] != True or 'status_2FA' not in st.session_state or st.session_state["status_2FA"] != True:
-    st.warning('Please log in first!')
-elif st.session_state["authentication_status"] == True and st.session_state["status_2FA"] == True:
-    authenticator.logout('Logout', 'main')
+if (
+    "authentication_status" not in st.session_state
+    or st.session_state["authentication_status"] != True
+    or "status_2FA" not in st.session_state
+    or st.session_state["status_2FA"] != True
+):
+    st.warning("Please log in first!")
+elif (
+    st.session_state["authentication_status"] == True
+    and st.session_state["status_2FA"] == True
+):
+    authenticator.logout("Logout", "main")
     st.write(f'Welcome, *{st.session_state["name"]}*')
 
-    txnAmountInput = st.number_input('Enter the amount that you want to transfer (in USD): ', min_value=0)
+    txnAmountInput = st.number_input(
+        "Enter the amount that you want to transfer (in USD): ", min_value=0
+    )
 
     if st.button("Submit"):
         txnAmount = float(txnAmountInput)
-        tmpStmt = "you have successfully transferred " + txnAmount + " USD to our platform!"
+        tmpStmt = (
+            "you have successfully transferred " + txnAmount + " USD to our platform!"
+        )
         url = "https://payments.sandbox.braintree-api.com/graphql"
 
         headers = CaseInsensitiveDict()
-        headers["Authorization"] = "Basic "+os.environ["BRAINTREE_HASH"]
+        headers["Authorization"] = "Basic " + os.environ["BRAINTREE_HASH"]
         headers["Braintree-Version"] = "2023-04-23"
         headers["Content-Type"] = "application/json"
 
-        data = '{"query": "mutation chargePaymentMethod($input: ChargePaymentMethodInput!) {chargePaymentMethod(input: $input) {transaction {id status}}}" ,"variables": {"input": {"paymentMethodId": "fake-valid-nonce","transaction": {"amount": "' + txnAmount + '"}}}}'
+        data = (
+            '{"query": "mutation chargePaymentMethod($input: ChargePaymentMethodInput!) {chargePaymentMethod(input: $input) {transaction {id status}}}" ,"variables": {"input": {"paymentMethodId": "fake-valid-nonce","transaction": {"amount": "'
+            + txnAmount
+            + '"}}}}'
+        )
         resp = requests.post(url, headers=headers, data=data)
         reply = json.loads(resp.text)
 
-        if reply["data"] and reply["data"]["chargePaymentMethod"]["transaction"]["status"] == "SUBMITTED_FOR_SETTLEMENT":
+        if (
+            reply["data"]
+            and reply["data"]["chargePaymentMethod"]["transaction"]["status"]
+            == "SUBMITTED_FOR_SETTLEMENT"
+        ):
             st.write(f'*{st.session_state["name"]}*, {tmpStmt}')
         else:
-            st.error('Error message: ', reply["errors"]["message"], '.')
+            st.error("Error message: ", reply["errors"]["message"], ".")

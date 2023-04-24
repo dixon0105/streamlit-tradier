@@ -1,29 +1,41 @@
-import os, streamlit as st
+import json
+import os
+
+import streamlit as st
 import streamlit_authenticator as stauth
 import yaml
-from yaml.loader import SafeLoader
+
 # Below for CoinMarketCap API
 from requests import Request, Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
-import json
+from yaml.loader import SafeLoader
+
 # Ref.: https://coinmarketcap.com/api/documentation/v1/#
 
 st.title("Get Crypto Prices")
 
-with open('./config.yaml') as file:
+with open("./config.yaml") as file:
     config = yaml.load(file, Loader=SafeLoader)
 authenticator = stauth.Authenticate(
-    config['credentials'],
-    config['cookie']['name'],
-    config['cookie']['key'],
-    config['cookie']['expiry_days']
+    config["credentials"],
+    config["cookie"]["name"],
+    config["cookie"]["key"],
+    config["cookie"]["expiry_days"],
 )
 
 # Check log in status
-if 'authentication_status' not in st.session_state or st.session_state["authentication_status"] != True or 'status_2FA' not in st.session_state or st.session_state["status_2FA"] != True:
-    st.warning('Please log in first!')
-elif st.session_state["authentication_status"] == True and st.session_state["status_2FA"] == True:
-    authenticator.logout('Logout', 'main')
+if (
+    "authentication_status" not in st.session_state
+    or st.session_state["authentication_status"] != True
+    or "status_2FA" not in st.session_state
+    or st.session_state["status_2FA"] != True
+):
+    st.warning("Please log in first!")
+elif (
+    st.session_state["authentication_status"] == True
+    and st.session_state["status_2FA"] == True
+):
+    authenticator.logout("Logout", "main")
     st.write(f'Welcome, *{st.session_state["name"]}*')
 
     # Actual link: 'https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest'
@@ -31,11 +43,14 @@ elif st.session_state["authentication_status"] == True and st.session_state["sta
     # Below 2 lines for finding the IDs of corresponding coins only
     # url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map'
     # parameters = {'symbol':'BTC,ETH,LINK,USDT,SHIB'}
-    url = 'https://sandbox-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest'
-    parameters = {'convert':'USD', 'id':'825,1,1027,1975,5994'}
+    url = "https://sandbox-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest"
+    parameters = {"convert": "USD", "id": "825,1,1027,1975,5994"}
     # ID: 1 (BTC), 1027 (ETH), 1975 (LINK), 5994 (SHIB), 825 (USDT)
 
-    headers = {'Accepts': 'application/json', 'X-CMC_PRO_API_KEY': os.environ["CMC_APIKEY"]}
+    headers = {
+        "Accepts": "application/json",
+        "X-CMC_PRO_API_KEY": os.environ["CMC_APIKEY"],
+    }
     session = Session()
     session.headers.update(headers)
 
@@ -43,10 +58,14 @@ elif st.session_state["authentication_status"] == True and st.session_state["sta
         response = session.get(url, params=parameters)
         data = json.loads(response.text)
         for i in data["data"]:
-            if (data["data"][i]["symbol"] == "SHIB"):
-                st.write(f'Price of {data["data"][i]["name"]} ({data["data"][i]["symbol"]}): {data["data"][i]["quote"]["USD"]["price"]:.8f}')
+            if data["data"][i]["symbol"] == "SHIB":
+                st.write(
+                    f'Price of {data["data"][i]["name"]} ({data["data"][i]["symbol"]}): {data["data"][i]["quote"]["USD"]["price"]:.8f}'
+                )
             else:
-                st.write(f'Price of {data["data"][i]["name"]} ({data["data"][i]["symbol"]}): {round(data["data"][i]["quote"]["USD"]["price"],4)}')
+                st.write(
+                    f'Price of {data["data"][i]["name"]} ({data["data"][i]["symbol"]}): {round(data["data"][i]["quote"]["USD"]["price"],4)}'
+                )
 
     except (ConnectionError, Timeout, TooManyRedirects) as e:
         st.write(e)
