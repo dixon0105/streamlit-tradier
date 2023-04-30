@@ -107,7 +107,7 @@ elif (
 
             newUSD = remainUSD - txnUSD
             newBTC = remainBTC + txnBTC
-            queryStmt = f'UPDATE user_bal SET usd_bal={newUSD}, btc_bal={newBTC} WHERE username={st.session_state["username"]};'
+            queryStmt = f"UPDATE user_bal SET usd_bal={newUSD}, btc_bal={newBTC} WHERE username='"+st.session_state["username"]+"';"
             run_query(queryStmt,0)
         else:
             st.warning("Not enough USD in your account.")
