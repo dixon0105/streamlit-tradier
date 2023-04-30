@@ -80,13 +80,15 @@ elif (
         )
     conn = init_connection()
     # Perform query.
-    def run_query(query):
+    def run_query(query,mode):
         with conn.cursor() as cur:
             cur.execute(query)
+            if mode:
+                return cur.fetchall()
 
     queryStmt = "SELECT * FROM user_bal WHERE username = '"
     queryStmt += st.session_state["username"]+"';"
-    userDetail = run_query(queryStmt)
+    userDetail = run_query(queryStmt,1)
     remainUSD = userDetail[0][1]
     remainBTC = userDetail[0][2]
     remainETH = userDetail[0][3]
@@ -101,12 +103,12 @@ elif (
         if (remainUSD >= txnUSD):
             queryStmt = "INSERT INTO txn_history (buy_currency, buy_amount, sell_currency, sell_amount, usd_price, username) VALUES ("
             queryStmt += "'BTC',"+str(amt)+",'USD',"+str(txnUSD)+","+str(round(currentPriceInUSD, 4))+",'"+st.session_state["username"]+"');"
-            run_query(queryStmt)
+            run_query(queryStmt,0)
 
             newUSD = remainUSD - txnUSD
             newBTC = remainBTC + txnBTC
             queryStmt = f'UPDATE user_bal SET usd_bal={newUSD}, btc_bal={newBTC} WHERE username={st.session_state["username"]};'
-            run_query(queryStmt)
+            run_query(queryStmt,0)
         else:
             st.warning("Not enough USD in your account.")
 # try:
