@@ -45,10 +45,11 @@ elif (
     # Actual link: 'https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest'
     # Sandbox link: 'https://sandbox-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest'
     # Below 2 lines for finding the IDs of corresponding coins only
-    # url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map'
-    # parameters = {'symbol':'BTC,ETH,LINK,USDT,SHIB'}
-    url = "https://sandbox-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest"
-    parameters = {"convert": "USD", "id": "825,1,1027,1975,5994"}
+    url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map'
+    parameters = {'symbol':'BTC,ETH,LINK,USDT,SHIB,LTC'}
+
+    # url = "https://sandbox-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest"
+    # parameters = {"convert": "USD", "id": "825,1,1027,1975,5994"}
     # ID: 1 (BTC), 1027 (ETH), 1975 (LINK), 5994 (SHIB), 825 (USDT)
 
     headers = {
@@ -61,15 +62,10 @@ elif (
     try:
         response = session.get(url, params=parameters)
         data = json.loads(response.text)
-        for i in data["data"]:
-            if data["data"][i]["symbol"] == "SHIB":
-                st.write(
-                    f'Price of {data["data"][i]["name"]} ({data["data"][i]["symbol"]}): {data["data"][i]["quote"]["USD"]["price"]:.8f}'
-                )
-            else:
-                st.write(
-                    f'Price of {data["data"][i]["name"]} ({data["data"][i]["symbol"]}): {round(data["data"][i]["quote"]["USD"]["price"],4)}'
-                )
+        st.write(data)
+        #for i in data["data"]:
+        #    st.write(f'Price of {data["data"][i]["name"]} ({data["data"][i]["symbol"]}) in USD: {round(data["data"][i]["quote"]["USD"]["price"],4)}')
+        #    st.write(f'Price of {data["data"][i]["name"]} ({data["data"][i]["symbol"]}) in USDT: {round(data["data"][i]["quote"]["USDT"]["price"], 4)}')
 
     except (ConnectionError, Timeout, TooManyRedirects) as e:
         st.write(e)
