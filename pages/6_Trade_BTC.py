@@ -97,24 +97,29 @@ elif (
     remainLTC = userDetail[0][6]
     st.write("You have ",remainUSD," USD and ",remainBTC," BTC remaining.")
 
+    queryStmt = "SELECT * FROM user_bal;"
+    rows = run_query(queryStmt, 1)
+    st.write(rows)
+
     if st.button("Buy", key='buy'):
         txnBTC = amt
         txnUSD = round(amt * currentPriceInUSD, 4)
         if (remainUSD >= txnUSD):
-            queryStmt = "INSERT INTO txn_history (buy_currency, buy_amount, sell_currency, sell_amount, usd_price, username) VALUES ("
-            queryStmt += "'BTC',"+str(amt)+",'USD',"+str(txnUSD)+","+str(round(currentPriceInUSD, 4))+",'"+st.session_state["username"]+"');"
-            run_query(queryStmt,0)
-
-            newUSD = remainUSD - txnUSD
-            newBTC = remainBTC + txnBTC
-            queryStmt = f"UPDATE user_bal SET usd_bal={newUSD}, btc_bal={newBTC} WHERE username='"+st.session_state["username"]+"';"
-            run_query(queryStmt,0)
+            try:
+                queryStmt = "INSERT INTO txn_history (buy_currency, buy_amount, sell_currency, sell_amount, usd_price, username) VALUES ("
+                queryStmt += "'BTC',"+str(amt)+",'USD',"+str(txnUSD)+","+str(round(currentPriceInUSD, 4))+",'"+st.session_state["username"]+"');"
+                run_query(queryStmt,0)
+            except:
+                st.warning("Error in writing to database for transaction history.")
+            else:
+                try:
+                    newUSD = remainUSD - txnUSD
+                    newBTC = remainBTC + txnBTC
+                    queryStmt = f"UPDATE user_bal SET usd_bal={newUSD}, btc_bal={newBTC} WHERE username='"+st.session_state["username"]+"';"
+                    run_query(queryStmt,0)
+                except:
+                    st.warning("Error in writing to database for updating balances.")
+                else:
+                    st.write("Done!")
         else:
             st.warning("Not enough USD in your account.")
-# try:
-
-
-
-#            st.write("Done!")
- #       except:
-  #          st.write("Something went wrong, try again later.")
