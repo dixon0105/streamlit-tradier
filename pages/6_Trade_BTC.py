@@ -83,7 +83,6 @@ elif (
     def run_query(query):
         with conn.cursor() as cur:
             cur.execute(query)
-            return cur.fetchall()
 
     queryStmt = "SELECT * FROM user_bal WHERE username = '"
     queryStmt += st.session_state["username"]+"';"
