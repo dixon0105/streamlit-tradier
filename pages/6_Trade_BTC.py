@@ -88,13 +88,12 @@ elif (
     queryStmt = "SELECT * FROM user_bal WHERE username = '"
     queryStmt += st.session_state["username"]+"';"
     userDetail = run_query(queryStmt)
-    st.write(userDetail)
-    remainUSD = userDetail[1]
-    remainBTC = userDetail[2]
-    remainETH = userDetail[3]
-    remainLINK = userDetail[4]
-    remainUSDT = userDetail[5]
-    remainLTC = userDetail[6]
+    remainUSD = userDetail[0][1]
+    remainBTC = userDetail[0][2]
+    remainETH = userDetail[0][3]
+    remainLINK = userDetail[0][4]
+    remainUSDT = userDetail[0][5]
+    remainLTC = userDetail[0][6]
     st.write("You have ",remainUSD," USD and ",remainBTC," BTC remaining.")
 
     if st.button("Buy", key='buy'):
