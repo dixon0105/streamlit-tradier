@@ -85,19 +85,34 @@ elif (
             cur.execute(query)
             return cur.fetchall()
 
-    queryStmt = "SELECT * FROM user_bal WHERE username = 'roy';"
-    rows = run_query(queryStmt)
-    st.write(rows)
+    queryStmt = "SELECT * FROM user_bal WHERE username = '"
+    queryStmt += st.session_state["username"]+"';"
+    userDetail = run_query(queryStmt)
+    remainUSD = userDetail[1]
+    remainBTC = userDetail[2]
+    remainETH = userDetail[3]
+    remainLINK = userDetail[4]
+    remainUSDT = userDetail[5]
+    remainLTC = userDetail[6]
+    st.write("You have ",remainUSD," USD and ",remainBTC," BTC remaining.")
 
     if st.button("Buy", key='buy'):
-        queryStmt = "INSERT INTO txn_history (buy_currency, buy_amount, sell_currency, sell_amount, usd_price, username) VALUES ("
-        queryStmt += '"BTC",' + str(amt) + ',"USD",' + str(round(amt * currentPriceInUSD, 4)) + ',' + str(round(currentPriceInUSD, 4)) + ',' + st.session_state["username"] + ');'
-        run_query(queryStmt)
-        #try:
+        txnBTC = amt
+        txnUSD = round(amt * currentPriceInUSD, 4)
+        if (remainUSD >= txnUSD):
+            queryStmt = "INSERT INTO txn_history (buy_currency, buy_amount, sell_currency, sell_amount, usd_price, username) VALUES ("
+            queryStmt += '"BTC",' + str(amt) + ',"USD",' + str(txnUSD) + ',' + str(round(currentPriceInUSD, 4)) + ',' + st.session_state["username"] + ');'
+            run_query(queryStmt)
+
+            newUSD = remainUSD - txnUSD
+            newBTC = remainBTC + txnBTC
+            queryStmt = f'UPDATE user_bal SET usd_bal = {newUSD}, btc_bal={newBTC} WHERE username = {st.session_state["username"]};'
+            run_query(queryStmt)
+        else:
+            st.warning("Not enough USD in your account.")
+# try:
 
 
-            # queryStmt = "UPDATE user_bal SET xxx = xxx WHERE username = username;"
-            # run_query(queryStmt)
 
 #            st.write("Done!")
  #       except:
