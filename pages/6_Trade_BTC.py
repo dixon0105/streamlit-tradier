@@ -88,6 +88,7 @@ elif (
     queryStmt = "SELECT * FROM user_bal WHERE username = '"
     queryStmt += st.session_state["username"]+"';"
     userDetail = run_query(queryStmt)
+    st.write(userDetail)
     remainUSD = userDetail[1]
     remainBTC = userDetail[2]
     remainETH = userDetail[3]
