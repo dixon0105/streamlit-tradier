@@ -101,7 +101,7 @@ elif (
         txnUSD = round(amt * currentPriceInUSD, 4)
         if (remainUSD >= txnUSD):
             queryStmt = "INSERT INTO txn_history (buy_currency, buy_amount, sell_currency, sell_amount, usd_price, username) VALUES ("
-            queryStmt += "'BTC',"+str(amt)+",'USD',"+str(txnUSD)+","+str(round(currentPriceInUSD, 4))+","+st.session_state["username"]+");"
+            queryStmt += "'BTC',"+str(amt)+",'USD',"+str(txnUSD)+","+str(round(currentPriceInUSD, 4))+",'"+st.session_state["username"]+"');"
             run_query(queryStmt)
 
             newUSD = remainUSD - txnUSD
