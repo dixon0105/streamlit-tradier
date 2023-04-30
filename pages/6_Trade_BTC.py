@@ -78,9 +78,8 @@ elif (
             user=Settings().PGUSER,
             password=Settings().PGPASSWORD,
         )
-        conn = init_connection()
-        # Perform query.
-
+    conn = init_connection()
+    # Perform query.
     def run_query(query):
         with conn.cursor() as cur:
             cur.execute(query)
