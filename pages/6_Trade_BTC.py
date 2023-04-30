@@ -72,29 +72,41 @@ elif (
     except (ConnectionError, Timeout, TooManyRedirects) as e:
         st.write(e)
 
-    amt = st.number_input("Enter amount of BTC that you want to buy or sell", min_value=0)
+    amt = st.number_input("Enter amount of BTC that you want to buy or sell", min_value=0, step=0.01)
     st.write("Equivalent amount in USD: ", round(amt*currentPriceInUSD,4), ".")
 
     if st.button("Buy", key='buy'):
-        # Initialize connection.
-        # Uses st.cache_resource to only run once.
-        @st.cache_resource
-        def init_connection():
-            return psycopg2.connect(
-                host=Settings().PGHOST,
-                database=Settings().PGDATABASE,
-                user=Settings().PGUSER,
-                password=Settings().PGPASSWORD,
-            )
-            conn = init_connection()
-            # Perform query.
+        try:
+            # Initialize connection.
+            # Uses st.cache_resource to only run once.
+            @st.cache_resource
+            def init_connection():
+                return psycopg2.connect(
+                    host=Settings().PGHOST,
+                    database=Settings().PGDATABASE,
+                    user=Settings().PGUSER,
+                    password=Settings().PGPASSWORD,
+                )
+                conn = init_connection()
+                # Perform query.
 
-        def run_query(query):
-            with conn.cursor() as cur:
-                cur.execute(query)
-                return cur.fetchall()
-        queryStmt = "INSERT INTO txn_history (buy_currency, buy_amount, sell_currency, sell_amount, usd_price, username) VALUES ("
-        queryStmt += '"BTC",' + amt + ',"USD",' + round(amt*currentPriceInUSD,4) + ',' + round(currentPriceInUSD, 4) + ',' + st.session_state["name"] + ');'
-        run_query(queryStmt)
+            def run_query(query):
+                with conn.cursor() as cur:
+                    cur.execute(query)
+                    return cur.fetchall()
 
-        st.write("Done!")
+            queryStmt = "INSERT INTO txn_history (buy_currency, buy_amount, sell_currency, sell_amount, usd_price, username) VALUES ("
+            queryStmt += '"BTC",' + str(amt) + ',"USD",' + str(round(amt*currentPriceInUSD,4)) + ',' + str(round(currentPriceInUSD, 4)) + ',' + st.session_state["username"] + ');'
+            run_query(queryStmt)
+
+            queryStmt = "SELECT * FROM user_bal WHERE username = 'roy';"
+            rows = run_query(queryStmt)
+            print(rows)
+
+            queryStmt = "UPDATE user_bal SET xxx = xxx WHERE username = username;"
+
+            run_query(queryStmt)
+
+            st.write("Done!")
+        except:
+            st.write("Something went wrong, try again later.")
