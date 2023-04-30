@@ -72,7 +72,7 @@ elif (
     except (ConnectionError, Timeout, TooManyRedirects) as e:
         st.write(e)
 
-    amt = st.number_input("Enter amount of BTC that you want to buy or sell", min_value=0, step=0.01)
+    amt = st.number_input("Enter amount of BTC that you want to buy or sell", min_value=0.00, step=0.01)
     st.write("Equivalent amount in USD: ", round(amt*currentPriceInUSD,4), ".")
 
     if st.button("Buy", key='buy'):
