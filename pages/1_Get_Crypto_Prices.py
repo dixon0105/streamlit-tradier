@@ -61,7 +61,6 @@ elif (
     try:
         response = session.get(url, params=parameters)
         data = json.loads(response.text)
-        st.write(data)
         for i in data["data"]:
             st.write(f'Price of {data["data"][i]["name"]} ({data["data"][i]["symbol"]}) in USD: {round(data["data"][i]["quote"]["USD"]["price"], 4)}')
 

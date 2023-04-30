@@ -6,6 +6,12 @@ from config import Settings, Config
 import json
 import psycopg2
 
+# Below for CoinMarketCap API
+from requests import Request, Session
+from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
+from yaml.loader import SafeLoader
+from config import Settings, Config
+
 st.title("Trade BTC")
 
 with open("./config.yaml") as file:
