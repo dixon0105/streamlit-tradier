@@ -101,6 +101,10 @@ elif (
     rows = run_query(queryStmt, 1)
     st.write(rows)
 
+    queryStmt = "SELECT * FROM txn_history;"
+    rows = run_query(queryStmt, 1)
+    st.write(rows)
+
     if st.button("Buy", key='buy'):
         txnBTC = amt
         txnUSD = round(amt * currentPriceInUSD, 4)
