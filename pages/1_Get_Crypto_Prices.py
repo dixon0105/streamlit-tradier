@@ -48,7 +48,7 @@ elif (
     # url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map'
     # parameters = {'symbol':'BTC,ETH,LINK,USDT,SHIB,LTC'}
     url = "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest"
-    parameters = {"convert": "USD", "id": "1, 1027, 1975, 825, 2"}
+    parameters = {"convert": "USD", "id": "1,1027,1975,825,2"}
     # ID: 1 (BTC), 1027 (ETH), 1975 (LINK), 825 (USDT), 2 (LTC), 5994 (SHIB)
 
     headers = {
