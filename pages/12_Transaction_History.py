@@ -55,9 +55,8 @@ elif (
             if mode:
                 return cur.fetchall()
 
-    queryStmt = "SELECT * FROM txn_history;"
+    queryStmt = "SELECT buy_currency,buy_amount,sell_currency,sell_amount,usd_price,username FROM txn_history;"
     rows = run_query(queryStmt, 1)
-    df = pd.DataFrame(rows)
+    df = pd.DataFrame(rows, columns=('Buy','Buy Amount','Sell','Sell Amount','Price (USD)','User Name'))
     st.write(df)
-    st.table(df)
 

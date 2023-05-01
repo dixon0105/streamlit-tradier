@@ -60,4 +60,3 @@ elif (
     rows = run_query(queryStmt, 1)
     df = pd.DataFrame(rows, columns=('User Name','USD','BTC','ETH','LINK','USDT','LTC'))
     st.write(df)
-    st.table(df)
