@@ -59,13 +59,14 @@ elif (
         response = session.get(url, params=parameters)
         data = json.loads(response.text)
         currentPriceInUSD = data["data"][i]["quote"]["USD"]["price"]
-        st.write(f'Price of {data["data"][i]["name"]} ({data["data"][i]["symbol"]}) in USD: {round(currentPriceInUSD, 4)}')
+        txnPrice = currentPriceInUSD * 0.01
+        buyPrice = currentPriceInUSD + txnPrice
+        sellPrice = currentPriceInUSD - txnPrice
+        st.write(f'Buy price of {data["data"][i]["name"]} ({data["data"][i]["symbol"]}) in USD: {round(buyPrice, 4)}.')
+        st.write(f'Sell price of {data["data"][i]["name"]} ({data["data"][i]["symbol"]}) in USD: {round(sellPrice, 4)}.')
 
     except (ConnectionError, Timeout, TooManyRedirects) as e:
         st.write(e)
-
-    amt = st.number_input("Enter amount of BTC that you want to buy or sell", min_value=0.00, step=0.01)
-    st.write("Equivalent amount in USD: ", round(amt*currentPriceInUSD,4), ".")
 
 
     # Initialize connection.
@@ -79,51 +80,78 @@ elif (
     conn = init_connection()
     conn.autocommit = True
     # Perform query.
-    @st.cache_data(ttl=15)
+    @st.cache_data(ttl=300)
     def run_query(query,mode):
         with conn.cursor() as cur:
             cur.execute(query)
             if mode:
                 return cur.fetchall()
 
-    queryStmt1 = "SELECT * FROM user_bal WHERE username = '"
-    queryStmt1 += st.session_state["username"]+"';"
-    userDetail = run_query(queryStmt1,1)
+    queryStmt = "SELECT * FROM user_bal WHERE username = '"
+    queryStmt += st.session_state["username"]+"';"
+    userDetail = run_query(queryStmt,1)
     remainUSD = userDetail[0][1]
     remainBTC = userDetail[0][2]
-    remainETH = userDetail[0][3]
-    remainLINK = userDetail[0][4]
-    remainUSDT = userDetail[0][5]
-    remainLTC = userDetail[0][6]
-    st.write("You have ",remainUSD," USD and ",remainBTC," BTC remaining.")
+    # remainETH = userDetail[0][3]
+    # remainLINK = userDetail[0][4]
+    # remainUSDT = userDetail[0][5]
+    # remainLTC = userDetail[0][6]
+    st.write("You currently have ",remainUSD," USD and ",remainBTC," BTC.")
 
-    queryStmt2 = "SELECT * FROM user_bal;"
-    rows = run_query(queryStmt2, 1)
-    st.write(rows)
 
-    queryStmt3 = "SELECT * FROM txn_history;"
-    rows = run_query(queryStmt3, 1)
-    st.write(rows)
+    buyAmount = st.number_input("Enter amount of BTC that you want to buy:", min_value=0.000, step=0.001)
+    st.write("Equivalent amount in USD: ", round(buyAmount * buyPrice,4), ".")
 
     if st.button("Buy", key='buy'):
-        txnBTC = amt
-        txnUSD = round(amt * currentPriceInUSD, 4)
+        txnBTC = buyAmount
+        txnUSD = round(buyAmount * buyPrice, 4)
         if (remainUSD >= txnUSD):
             try:
-                queryStmt4 = "INSERT INTO txn_history (buy_currency, buy_amount, sell_currency, sell_amount, usd_price, username) VALUES ("
-                queryStmt4 += "'BTC',"+str(amt)+",'USD',"+str(txnUSD)+","+str(round(currentPriceInUSD, 4))+",'"+st.session_state["username"]+"');"
-                run_query(queryStmt4,0)
+                queryStmt = "INSERT INTO txn_history (buy_currency, buy_amount, sell_currency, sell_amount, usd_price, username) VALUES ("
+                queryStmt += "'BTC',"+str(txnBTC)+",'USD',"+str(txnUSD)+","+str(round(buyAmount * buyPrice, 4))+",'"+st.session_state["username"]+"');"
+                run_query(queryStmt,0)
             except:
                 st.warning("Error in writing to database for transaction history.")
             else:
                 try:
                     newUSD = remainUSD - txnUSD
                     newBTC = remainBTC + txnBTC
-                    queryStmt5 = f"UPDATE user_bal SET usd_bal={newUSD}, btc_bal={newBTC} WHERE username='"+st.session_state["username"]+"';"
-                    run_query(queryStmt5,0)
+                    fee = round(buyAmount * txnPrice, 4)
+                    queryStmt = f"UPDATE user_bal SET usd_bal={newUSD}, btc_bal={newBTC} WHERE username='"+st.session_state["username"]+"';"
+                    queryStmt += f"UPDATE user_bal SET usd_bal=usd_bal + {fee} WHERE username='system';"
+                    run_query(queryStmt,0)
                 except:
                     st.warning("Error in writing to database for updating balances.")
                 else:
                     st.write("Done!")
         else:
             st.warning("Not enough USD in your account.")
+
+
+    sellAmount = st.number_input("Enter amount of BTC that you want to sell:", min_value=0.000, step=0.001)
+    st.write("Equivalent amount in USD: ", round(sellAmount * sellPrice,4), ".")
+
+    if st.button("Sell", key='sell'):
+        txnBTC = sellAmount
+        txnUSD = round(sellAmount * sellPrice, 4)
+        if (remainBTC >= txnBTC):
+            try:
+                queryStmt = "INSERT INTO txn_history (buy_currency, buy_amount, sell_currency, sell_amount, usd_price, username) VALUES ("
+                queryStmt += "'USD',"+str(txnUSD)+",'BTC',"+str(txnBTC)+","+str(round(sellAmount * sellPrice, 4))+",'"+st.session_state["username"]+"');"
+                run_query(queryStmt,0)
+            except:
+                st.warning("Error in writing to database for transaction history.")
+            else:
+                try:
+                    newUSD = remainUSD + txnUSD
+                    newBTC = remainBTC - txnBTC
+                    fee = round(sellAmount * txnPrice, 4)
+                    queryStmt = f"UPDATE user_bal SET usd_bal={newUSD}, btc_bal={newBTC} WHERE username='"+st.session_state["username"]+"';"
+                    queryStmt += f"UPDATE user_bal SET usd_bal=usd_bal + {fee} WHERE username='system';"
+                    run_query(queryStmt,0)
+                except:
+                    st.warning("Error in writing to database for updating balances.")
+                else:
+                    st.write("Done!")
+        else:
+            st.warning("Not enough BTC in your account.")
