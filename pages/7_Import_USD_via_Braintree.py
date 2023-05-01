@@ -43,9 +43,7 @@ elif (
 
     if st.button("Submit"):
         txnAmount = float(txnAmountInput)
-        tmpStmt = (
-            "you have successfully transferred " + txnAmount + " USD to our platform!"
-        )
+        tmpStmt = f'you have successfully transferred {txnAmount} USD to our platform!'
         url = "https://payments.sandbox.braintree-api.com/graphql"
 
         headers = CaseInsensitiveDict()

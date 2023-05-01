@@ -48,7 +48,7 @@ elif (
     conn = init_connection()
     conn.autocommit = True
     # Perform query.
-    @st.cache_data(ttl=300)
+    @st.cache_data(ttl=10)
     def run_query(query,mode):
         with conn.cursor() as cur:
             cur.execute(query)
