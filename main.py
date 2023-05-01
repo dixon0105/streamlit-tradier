@@ -80,4 +80,5 @@ else:
                     st.session_state["authentication_status"] = None
         else:
             st.write("Please feel free to visit other pages!")
+            st.write("[Link](./Trade_BTC)")
 
