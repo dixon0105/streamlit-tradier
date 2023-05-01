@@ -6,6 +6,7 @@ from config import Settings, Config
 import json
 import psycopg2
 import pandas as pd
+import numpy as np
 
 st.title("Check User Balances")
 
@@ -57,8 +58,6 @@ elif (
 
     queryStmt = "SELECT * FROM user_bal;"
     rows = run_query(queryStmt, 1)
-    st.write(rows)
-    st.table(rows)
-    df = pd.DataFrame(rows)
+    df = pd.DataFrame(rows, columns=('User Name','USD','BTC','ETH','LINK','USDT','LTC'))
     st.write(df)
     st.table(df)

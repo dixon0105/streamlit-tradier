@@ -57,9 +57,6 @@ elif (
 
     queryStmt = "SELECT * FROM txn_history;"
     rows = run_query(queryStmt, 1)
-    df = pd.read_json(rows)
-    st.write(rows)
-    st.table(rows)
     df = pd.DataFrame(rows)
     st.write(df)
     st.table(df)
