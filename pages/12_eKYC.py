@@ -9,8 +9,8 @@ st.write('Please fill in the following details.')
 
 name = st.text_input('Your name:')
 email = st.text_input('E-mail address:')
-phone_no = st.number_input('Mobile phone number:')
-annual_income = st.number_input('Annual income (in USD):')
+phone_no = st.number_input('Mobile phone number:',min_value=0,step=1)
+annual_income = st.number_input('Annual income (in USD):',min_value=0,step=1)
 descriptions = st.text_area('Descriptions about yourself:', height=300)
 link = st.text_input('Link to the required documents:')
 
