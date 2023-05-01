@@ -10,6 +10,8 @@ from PIL import Image
 from yaml.loader import SafeLoader
 from config import Settings, Config
 
+st.set_page_config(page_title="COMP5521 Group Project", page_icon=":100:")
+
 st.title("2FA QR Code")
 
 with open("./config.yaml") as file:

@@ -8,6 +8,8 @@ import psycopg2
 import pandas as pd
 import numpy as np
 
+st.set_page_config(page_title="COMP5521 Group Project", page_icon=":100:")
+
 st.title("Check User Balances")
 
 with open("./config.yaml") as file:

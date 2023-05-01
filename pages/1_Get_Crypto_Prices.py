@@ -13,6 +13,8 @@ from config import Settings, Config
 
 # Ref.: https://coinmarketcap.com/api/documentation/v1/#
 
+st.set_page_config(page_title="COMP5521 Group Project", page_icon=":100:")
+
 st.title("Get Crypto Prices")
 
 with open("./config.yaml") as file:

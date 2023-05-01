@@ -3,6 +3,8 @@ import json
 import psycopg2
 from config import Settings, Config
 
+st.set_page_config(page_title="COMP5521 Group Project", page_icon=":100:")
+
 st.title("e-Support")
 
 st.write('Please fill in the following details.')
