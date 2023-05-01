@@ -10,7 +10,7 @@ import yaml
 from yaml.loader import SafeLoader
 from config import Settings, Config
 
-st.set_page_config(page_title="COMP Project", page_icon="random")
+st.set_page_config(page_title="COMP5521 Group Project", page_icon=":100:")
 
 with open("./config.yaml") as file:
     config = yaml.load(file, Loader=SafeLoader)
