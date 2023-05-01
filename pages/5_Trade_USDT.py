@@ -123,7 +123,7 @@ elif (
                 except:
                     st.warning("Error in writing to database for updating balances.")
                 else:
-                    st.write("Done!")
+                    st.success("Done!")
         else:
             st.warning("Not enough USD in your account.")
 
@@ -152,6 +152,6 @@ elif (
                 except:
                     st.warning("Error in writing to database for updating balances.")
                 else:
-                    st.write("Done!")
+                    st.success("Done!")
         else:
             st.warning("Not enough USDT in your account.")

@@ -81,6 +81,6 @@ elif (
             except:
                 st.warning("Error in writing to database for updating USD balance.")
             else:
-                st.write(f'*{st.session_state["name"]}*, {tmpStmt}')
+                st.success(f'*{st.session_state["name"]}*, {tmpStmt}')
         else:
             st.error("Error message: ", reply["errors"]["message"], ".")
