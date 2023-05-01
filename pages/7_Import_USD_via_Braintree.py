@@ -51,18 +51,11 @@ elif (
         headers["Braintree-Version"] = "2023-04-23"
         headers["Content-Type"] = "application/json"
 
-        data = '{"query": "mutation chargePaymentMethod($input: ChargePaymentMethodInput!) '
-        data += '{chargePaymentMethod(input: $input) {transaction {id status}}}" ,"variables": '
-        data += '{"input": {"paymentMethodId": "fake-valid-nonce","transaction": {"amount": "'
-        data += f'{txnAmount}"'+'}}}}'
+        data = '{"query": "mutation chargePaymentMethod($input: ChargePaymentMethodInput!) {chargePaymentMethod(input: $input) {transaction {id status}}}" ,"variables": {"input": {"paymentMethodId": "fake-valid-nonce","transaction": {"amount": "' + f'{txnAmount}' + '"}}}}'
         resp = requests.post(url, headers=headers, data=data)
         reply = json.loads(resp.text)
 
-        if (
-            reply["data"]
-            and reply["data"]["chargePaymentMethod"]["transaction"]["status"]
-            == "SUBMITTED_FOR_SETTLEMENT"
-        ):
+        if reply["data"] and reply["data"]["chargePaymentMethod"]["transaction"]["status"] == "SUBMITTED_FOR_SETTLEMENT":
             # Initialize connection.
             def init_connection():
                 return psycopg2.connect(
