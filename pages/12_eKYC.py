@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import psycopg2
+from config import Settings, Config
 
 st.title("eKYC")
 
