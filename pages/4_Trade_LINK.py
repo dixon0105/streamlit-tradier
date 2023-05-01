@@ -12,7 +12,7 @@ from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 from yaml.loader import SafeLoader
 from config import Settings, Config
 
-st.title("Trade BTC")
+st.title("Trade LINK")
 
 with open("./config.yaml") as file:
     config = yaml.load(file, Loader=SafeLoader)
@@ -42,7 +42,7 @@ elif (
     st.write(f'Welcome, *{st.session_state["name"]}*')
 
 
-    i = "1"   # ID of the coin
+    i = "1975"   # ID of the coin
     # url = "https://sandbox-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest"
     url = "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest"
     parameters = {"convert": "USD", "id": i}
@@ -91,33 +91,33 @@ elif (
     queryStmt += st.session_state["username"]+"';"
     userDetail = run_query(queryStmt,1)
     remainUSD = userDetail[0][1]
-    remainBTC = userDetail[0][2]
+    # remainBTC = userDetail[0][2]
     # remainETH = userDetail[0][3]
-    # remainLINK = userDetail[0][4]
+    remainLINK = userDetail[0][4]
     # remainUSDT = userDetail[0][5]
     # remainLTC = userDetail[0][6]
-    st.write("You currently have ",remainUSD," USD and ",remainBTC," BTC.")
+    st.write("You currently have ",remainUSD," USD and ",remainLINK," LINK.")
 
 
-    buyAmount = st.number_input("Enter amount of BTC that you want to buy:", min_value=0.000, step=0.001)
+    buyAmount = st.number_input("Enter amount of LINK that you want to buy:", min_value=0.000, step=0.001)
     st.write("Equivalent amount in USD: ", round(buyAmount * buyPrice,4), ".")
 
     if st.button("Buy", key='buy'):
-        txnBTC = buyAmount
+        txnLINK = buyAmount
         txnUSD = round(buyAmount * buyPrice, 4)
         if (remainUSD >= txnUSD):
             try:
                 queryStmt = "INSERT INTO txn_history (buy_currency, buy_amount, sell_currency, sell_amount, usd_price, username) VALUES ("
-                queryStmt += "'BTC',"+str(txnBTC)+",'USD',"+str(txnUSD)+","+str(round(buyAmount * buyPrice, 4))+",'"+st.session_state["username"]+"');"
+                queryStmt += "'LINK',"+str(txnLINK)+",'USD',"+str(txnUSD)+","+str(round(buyAmount * buyPrice, 4))+",'"+st.session_state["username"]+"');"
                 run_query(queryStmt,0)
             except:
                 st.warning("Error in writing to database for transaction history.")
             else:
                 try:
                     newUSD = remainUSD - txnUSD
-                    newBTC = remainBTC + txnBTC
+                    newLINK = remainLINK + txnLINK
                     fee = round(buyAmount * txnPrice, 4)
-                    queryStmt = f"UPDATE user_bal SET usd_bal={newUSD}, btc_bal={newBTC} WHERE username='"+st.session_state["username"]+"';"
+                    queryStmt = f"UPDATE user_bal SET usd_bal={newUSD}, link_bal={newLINK} WHERE username='"+st.session_state["username"]+"';"
                     queryStmt += f"UPDATE user_bal SET usd_bal=usd_bal + {fee} WHERE username='system';"
                     run_query(queryStmt,0)
                 except:
@@ -128,25 +128,25 @@ elif (
             st.warning("Not enough USD in your account.")
 
 
-    sellAmount = st.number_input("Enter amount of BTC that you want to sell:", min_value=0.000, step=0.001)
+    sellAmount = st.number_input("Enter amount of LINK that you want to sell:", min_value=0.000, step=0.001)
     st.write("Equivalent amount in USD: ", round(sellAmount * sellPrice,4), ".")
 
     if st.button("Sell", key='sell'):
-        txnBTC = sellAmount
+        txnLINK = sellAmount
         txnUSD = round(sellAmount * sellPrice, 4)
-        if (remainBTC >= txnBTC):
+        if (remainLINK >= txnLINK):
             try:
                 queryStmt = "INSERT INTO txn_history (buy_currency, buy_amount, sell_currency, sell_amount, usd_price, username) VALUES ("
-                queryStmt += "'USD',"+str(txnUSD)+",'BTC',"+str(txnBTC)+","+str(round(sellAmount * sellPrice, 4))+",'"+st.session_state["username"]+"');"
+                queryStmt += "'USD',"+str(txnUSD)+",'LINK',"+str(txnLINK)+","+str(round(sellAmount * sellPrice, 4))+",'"+st.session_state["username"]+"');"
                 run_query(queryStmt,0)
             except:
                 st.warning("Error in writing to database for transaction history.")
             else:
                 try:
                     newUSD = remainUSD + txnUSD
-                    newBTC = remainBTC - txnBTC
+                    newLINK = remainLINK - txnLINK
                     fee = round(sellAmount * txnPrice, 4)
-                    queryStmt = f"UPDATE user_bal SET usd_bal={newUSD}, btc_bal={newBTC} WHERE username='"+st.session_state["username"]+"';"
+                    queryStmt = f"UPDATE user_bal SET usd_bal={newUSD}, link_bal={newLINK} WHERE username='"+st.session_state["username"]+"';"
                     queryStmt += f"UPDATE user_bal SET usd_bal=usd_bal + {fee} WHERE username='system';"
                     run_query(queryStmt,0)
                 except:
@@ -154,4 +154,4 @@ elif (
                 else:
                     st.write("Done!")
         else:
-            st.warning("Not enough BTC in your account.")
+            st.warning("Not enough LINK in your account.")

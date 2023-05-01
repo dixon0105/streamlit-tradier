@@ -1,6 +1,6 @@
 import json
 import os
-
+import psycopg2
 import requests
 import streamlit as st
 import streamlit_authenticator as stauth
@@ -9,7 +9,7 @@ from requests.structures import CaseInsensitiveDict
 from yaml.loader import SafeLoader
 from config import Settings, Config
 
-st.title("Braintree")
+st.title("Import USD via Braintree")
 
 with open("./config.yaml") as file:
     config = yaml.load(file, Loader=SafeLoader)
@@ -66,6 +66,31 @@ elif (
             and reply["data"]["chargePaymentMethod"]["transaction"]["status"]
             == "SUBMITTED_FOR_SETTLEMENT"
         ):
-            st.write(f'*{st.session_state["name"]}*, {tmpStmt}')
+            # Initialize connection.
+            def init_connection():
+                return psycopg2.connect(
+                    host=Settings().PGHOST,
+                    database=Settings().PGDATABASE,
+                    user=Settings().PGUSER,
+                    password=Settings().PGPASSWORD,
+                )
+            conn = init_connection()
+            conn.autocommit = True
+
+            # Perform query.
+            @st.cache_data(ttl=10)
+            def run_query(query, mode):
+                with conn.cursor() as cur:
+                    cur.execute(query)
+                    if mode:
+                        return cur.fetchall()
+
+            try:
+                queryStmt = f"UPDATE user_bal SET usd_bal=usd_bal+{txnAmount} WHERE username='"+st.session_state["username"]+"';"
+                run_query(queryStmt, 0)
+            except:
+                st.warning("Error in writing to database for updating USD balance.")
+            else:
+                st.write(f'*{st.session_state["name"]}*, {tmpStmt}')
         else:
             st.error("Error message: ", reply["errors"]["message"], ".")
