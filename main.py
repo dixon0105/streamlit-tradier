@@ -80,6 +80,4 @@ else:
                     st.session_state["authentication_status"] = None
         else:
             st.write("Please feel free to visit other pages!")
-            st.write("[Link](./Trade_BTC)")
-            st.markdown('<a href="./Trade_BTC" target="_self">Trade BTC</a>', unsafe_allow_html=True)
 
