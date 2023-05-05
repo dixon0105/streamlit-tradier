@@ -8,7 +8,8 @@ packages = [{include = "streamlit_tradier"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-streamlit = "^1.21.0"
+streamlit = "^1.3.0"
+streamlit-chat = "^0.0.2.2"
 qrcode = "^7.4.2"
 psycopg2-binary = "^2.9.6"
 PyYAML = "^6.0"
